@@ -19,8 +19,8 @@
       }
       
       // create the Threaded Gtalk GMScript button, with rel attribute referencing corresponding <select id="...">
-      if ($('a.ninja_search_activation[rel="' + id + '"]').size() === 0) {
-        $('<a class="ninja_search_activation" rel="' + id + '">Threaded Gtalk GMScript</a>')
+      if ($('a.threaded_gtalk_activation[rel="' + id + '"]').size() === 0) {
+        $('<a class="threaded_gtalk_activation" rel="' + id + '">Threaded Gtalk GMScript</a>')
         .insertAfter($(this))
 
         // register onclick handler
