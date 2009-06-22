@@ -22,25 +22,37 @@ Screw.Unit(function(){
           ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" },
           ":12d" : { "message": "#postman did delivery your parcel", "direction": "to" } 
         };
-        // expect(chat.messages()).to(equal, expected);
+        expect(chat.messages()).to(equal, expected);
       });
       it("should find tags", function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);
       });
     });
-    describe("#kids", function(){
+    describe("tagged messages", function(){
       it("should find #postman tagged messages", function(){
         var expected = { 
           ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" }
         };
-        // expect(chat.tagged('#kids')).to(equal, expected);
+        expect(chat.tagged('#kids')).to(equal, expected);
       });
       it("should include previous message with 'postman' in it into conversation", function(){
         var expected = { 
           ":12a" : { "message": "Nanc, how are the kids?", "direction": "from" }, 
           ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" }
         };
-        // expect(chat.conversation('#kids')).to(equal, expected);
+        expect(chat.conversation('#kids')).to(equal, expected);
+      });
+      it("should add class 'tag-kids' to messages in #kids conversation", function(){
+        expect($(":12a").hasClass('tag-kids')).to(equal, true);
+      });
+      it("should add class 'tag-kids' to messages in #kids conversation", function(){
+        expect($(":12b").hasClass('tag-kids')).to(equal, false);
+      });
+      it("should add class 'tag-kids' to messages in #kids conversation", function(){
+        expect($(":12c").hasClass('tag-kids')).to(equal, true);
+      });
+      it("should add class 'tag-kids' to messages in #kids conversation", function(){
+        expect($(":12d").hasClass('tag-kids')).to(equal, false);
       });
     });
   });
