@@ -6,14 +6,12 @@ var chat = {
   messages: function() { return {}; },
   tags: function() { return []; },
   tagged: function(tag) { return {}; },
-  conversation: function(includsTag) { return {}; }
+  conversation: function(includsTag) { return {}; },
+  appendMessage: function(message) {}
 };
 
 Screw.Unit(function(){
   describe("find threads", function(){
-    before(function(){
-      $('td.kw').remove(); // hide image menu links
-    });
     describe("helpers", function(){
       it("find all messages", function(){
         var expected = { 
@@ -58,13 +56,43 @@ Screw.Unit(function(){
   });
   describe("live updates", function(){
     before(function(){
-      // add a new message
+      $('.threaded-gtalk').remove();
     });
-    it("should discover #parcel thread", function(){
-      
+    describe("unrelated message", function(){
+      before(function(){
+        chat.appendMessage("this is an unrelated message");
+      });
+      it("should discover the new message", function(){
+        var expected = { 
+          ":12a" : { "message": "Nanc, how are the kids?", "direction": "from" }, 
+          ":12b" : { "message": "Did the postman come today?", "direction": "from" }, 
+          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" },
+          ":12d" : { "message": "#postman did delivery your parcel", "direction": "to" },
+          ":12e" : { "message": "this is an unrelated message", "direction": "to" }
+        };
+        expect(chat.messages()).to(equal, expected);
+      });
+      it("should not add the message to either conversation theread", function(){
+        expect($(":12e").hasClass('tag-kids')).to(equal, false);
+        expect($(":12e").hasClass('tag-postman')).to(equal, false);
+      });
+      it("should not add new tags", function(){
+        expect(chat.tags()).to(equal, ['#kids', '#postman']);
+      });
     });
-    it("should attach #parcel thread to #postman thread", function(){
-      
+    describe("extra threaded message", function(){
+      before(function(){
+        chat.appendMessage("this message is in #kid thread");
+      });
+      it("should add the message to #kid theread", function(){
+        expect($(":12e").hasClass('tag-kids')).to(equal, true);
+      });
+      it("should not add the message to #postman theread", function(){
+        expect($(":12e").hasClass('tag-postman')).to(equal, false);
+      });
+      it("should not add new tags", function(){
+        expect(chat.tags()).to(equal, ['#kids', '#postman']);
+      });
     });
   });
 });
