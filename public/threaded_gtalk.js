@@ -1,13 +1,22 @@
 var ThreadedGtalk = ThreadedGtalk || {};
-(function($){ 
+(function($){
+  // TODO move extensions to helper file
+  $.extend({
+      keys: function(obj){
+          var a = [];
+          $.each(obj, function(k){ a.push(k); });
+          return a;
+      }
+  });
+  
   ThreadedGtalk.Chat = (new function(){
 
+    // TODO memoize/cache result until new message DOM elements detected
     this.messages = function() {
       var messageElements = $('div.kf div.kl[id], div.kf div.kk span[id]');
       var messages = {};
       $.each(messageElements, function(index) {
         var element = $(this);
-        console.debug(element);
         messages[element.attr('id')] = {
           message: $.trim(element.text()),
           direction: element.closest("div[chat-dir]").attr('chat-dir')
@@ -15,8 +24,21 @@ var ThreadedGtalk = ThreadedGtalk || {};
       });
       return messages;
     };
-    this.tags = function() { return []; };
-    this.tagged = function(tag) { return {}; };
+    
+    // Discovers all #tag tokens in all messages and returns chronological list
+    // TODO memoize/cache result until new message DOM elements detected
+    this.tags = function() {
+      var tags = [];
+      this.eachOrderedMessage(function(messageObj) {
+        var messageTags = messageObj.message.match(/#[^ ]*/g);
+        if (messageTags) {
+          $.merge(tags, messageTags);
+        }
+      });
+      return tags;
+    };
+    
+    this.messageObjsTaggedBy = function(tag) { return {}; };
     this.conversation = function(includsTag) { return {}; };
 
     this.appendMessage = function(message) {
@@ -46,7 +68,22 @@ var ThreadedGtalk = ThreadedGtalk || {};
     		dec -= amount*(Math.pow(nb,i));
     	}
     	return number.toLowerCase();
-    }
+    };
+    
+    // TODO memoize/cache result until new message DOM elements detected
+    this.orderedMessageIds = function() {
+      return $.unique($.keys(this.messages())).sort();
+    };
+    
+    // TODO remove variable assignments after memoizing helpers
+    this.eachOrderedMessage = function(callback) {
+      var _messages = this.messages();
+      var messageIds = this.orderedMessageIds();
+      for (var i=0; i < messageIds.length; i++) {
+        var messageId = messageIds[i];
+        callback(_messages[messageId]);
+      };
+    };
 
   });
 })(jQuery); 

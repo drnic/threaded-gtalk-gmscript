@@ -23,12 +23,12 @@ Screw.Unit(function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);
       });
     });
-    describe("tagged messages", function(){
-      it("should find #postman tagged messages", function(){
+    describe("messageObjsTaggedBy messages", function(){
+      it("should find #postman messageObjsTaggedBy messages", function(){
         var expected = { 
           ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
-        expect(chat.tagged('#kids')).to(equal, expected);
+        expect(chat.messageObjsTaggedBy('#kids')).to(equal, expected);
       });
       it("should include previous message with 'postman' in it into conversation", function(){
         var expected = { 
