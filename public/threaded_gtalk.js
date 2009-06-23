@@ -11,9 +11,13 @@ var ThreadedGtalk = ThreadedGtalk || {};
   
   ThreadedGtalk.Chat = (new function(){
 
+    this.messageElements = function() {
+      return $('div.kf div.kl[id], div.kf div.kk span[id]');
+    };
+    
     // TODO memoize/cache result until new message DOM elements detected
     this.messages = function() {
-      var messageElements = $('div.kf div.kl[id], div.kf div.kk span[id]');
+      var messageElements = this.messageElements();
       var messages = {};
       $.each(messageElements, function(index) {
         var element = $(this);
@@ -55,13 +59,12 @@ var ThreadedGtalk = ThreadedGtalk || {};
     this.findMessagePrecedingTag = function(tag) {
       tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
       if (this.tags().indexOf(tag) === null) { return null; }
-      var untag = tag.replace(/^#/,'');
       var messages = this.messages();
       var messageIds = this.orderedMessageIds();
       var untaggedMessage = null;
       for (var i=0; i < messageIds.length; i++) {
         var messageId = messageIds[i];
-        if (messages[messageId].message.match(new RegExp("\\b" + untag + "\\b", "i"))) {
+        if (messages[messageId].message.match(new RegExp("\\b" + this.untag(tag) + "\\b", "i"))) {
           untaggedMessage = {};
           untaggedMessage[messageId] = messages[messageId];
           break;
@@ -70,6 +73,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return untaggedMessage;
     };
     
+    // All messages containing #tag and the most recent message containing 'tag' (without #)
     this.conversation = function(tag) {
       tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
       if (this.tags().indexOf(tag) === null) { return null; }
@@ -81,9 +85,10 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return messageObjs;
     };
 
+    // test helper to simulate addition of message to last person's set of messages
     this.appendMessage = function(message) {
-      var lastMessages = [$('div.kf div.kl:last').attr('id'), $('div.kf div.kk:last span:last').attr('id')];
-      var lastMessageId = lastMessages.sort()[1].match(/[0-9a-z]+/)[0];
+      var lastMessages = this.messageElements();
+      var lastMessageId = $(lastMessages.get(lastMessages.length - 1)).attr('id').match(/[0-9a-z]+/)[0];
       lastMessageId = parseInt(baseConverter(lastMessageId, 36, 10), 10);
       var nextId = baseConverter((lastMessageId + 1) + "", 10, 36);
       $('div.kf div.km:last').
@@ -115,6 +120,8 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return $.unique($.keys(this.messages())).sort();
     };
     
+    // Loop through each messageObj in order of the message ids
+    // callback function is passed a messageObj { id, message, direction }
     // TODO remove variable assignments after memoizing helpers
     this.eachOrderedMessage = function(callback) {
       var messages = this.messages();
@@ -125,6 +132,23 @@ var ThreadedGtalk = ThreadedGtalk || {};
       };
     };
     
+    this.untag = function(tag) {
+      return tag.replace(/^#/,'');
+    };
+    
+  });
+  
+  $(function() {
+    var chat = ThreadedGtalk.Chat;
+    var tags = chat.tags();
+    for (var i=0; i < tags.length; i++) {
+      var tag = tags[i];
+      var messages = chat.conversation(tag);
+      for (var messageId in messages) {
+        var messageObj = messages[messageId];
+        $("[id=" + messageObj.id + "]").addClass("tag-" + chat.untag(tag));
+      };
+    };
   });
 })(jQuery); 
 

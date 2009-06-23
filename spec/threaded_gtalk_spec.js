@@ -51,17 +51,17 @@ Screw.Unit(function(){
   });
   describe("initial DOM modifications", function(){
     describe("DOM modification", function(){
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12a").hasClass('tag-kids')).to(equal, true);
+      it("should add class 'tag-kids' to messages in #kids conversation (:12a)", function(){
+        expect($("[id=:12a]").hasClass('tag-kids')).to(equal, true);
       });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12b").hasClass('tag-kids')).to(equal, false);
+      it("should add class 'tag-kids' to messages in #kids conversation (:12c)", function(){
+        expect($("[id=:12c]").hasClass('tag-kids')).to(equal, true);
       });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12c").hasClass('tag-kids')).to(equal, true);
+      it("should not add class 'tag-kids' to messages in #kids conversation (:12b)", function(){
+        expect($("[id=:12b]").hasClass('tag-kids')).to(equal, false);
       });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12d").hasClass('tag-kids')).to(equal, false);
+      it("should not add class 'tag-kids' to messages in #kids conversation (:12d)", function(){
+        expect($("[id=:12d]").hasClass('tag-kids')).to(equal, false);
       });
     });
   });
