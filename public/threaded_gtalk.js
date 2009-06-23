@@ -1,18 +1,21 @@
 var ThreadedGtalk = ThreadedGtalk || {};
-ThreadedGtalk.Chat = {
-  messages: function() { return {}; },
-  tags: function() { return []; },
-  tagged: function(tag) { return {}; },
-  conversation: function(includsTag) { return {}; },
-  appendMessage: function(message) {
+ThreadedGtalk.Chat = (new function(){
+
+  this.messages = function() { return {}; };
+  this.tags = function() { return []; };
+  this.tagged = function(tag) { return {}; };
+  this.conversation = function(includsTag) { return {}; };
+
+  this.appendMessage = function(message) {
     var lastMessages = [$('div.kf div.kl:last').attr('id'), $('div.kf div.kk:last span:last').attr('id')];
     var lastMessageId = lastMessages.sort()[1].match(/[0-9a-z]+/)[0];
-    lastMessageId = parseInt(this.baseConverter(lastMessageId, 36, 10), 10);
-    var nextId = this.baseConverter((lastMessageId + 1) + "", 10, 36);
+    lastMessageId = parseInt(baseConverter(lastMessageId, 36, 10), 10);
+    var nextId = baseConverter((lastMessageId + 1) + "", 10, 36);
     $('div.kf div.km:last').
       append($('<div id=":' + nextId + '" dir="ltr" class="kl threaded-gtalk">' + message + '</div>'));
-  },
-  baseConverter: function(number,ob,nb) {
+  };
+  
+  function baseConverter(number,ob,nb) {
     // Found at http://www.geneffects.com/briarskin/programming/newJSMathFuncs.html
   	// Created 1997 by Brian Risk.  http://brianrisk.com
   	// Modified 2009 by Dr Nic Williams - return downcased result
@@ -32,4 +35,6 @@ ThreadedGtalk.Chat = {
   	return number.toLowerCase();
   }
   
+});
+var x ={
 };
