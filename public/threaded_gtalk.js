@@ -44,7 +44,6 @@ var ThreadedGtalk = ThreadedGtalk || {};
       if (this.tags().indexOf(tag) === null) { return null; }
       var messageObjs = {};
       this.eachOrderedMessage(function(messageObj) {
-        console.debug(messageObj);
         var taggedMessage = messageObj.message.match(new RegExp(tag));
         if (taggedMessage) {
           messageObjs[messageObj.id] = messageObj;
@@ -63,14 +62,24 @@ var ThreadedGtalk = ThreadedGtalk || {};
       for (var i=0; i < messageIds.length; i++) {
         var messageId = messageIds[i];
         if (messages[messageId].message.match(new RegExp("\\b" + untag + "\\b", "i"))) {
-          untaggedMessage = messages[messageId];
+          untaggedMessage = {};
+          untaggedMessage[messageId] = messages[messageId];
           break;
         }
       };
       return untaggedMessage;
     };
     
-    this.conversation = function(includsTag) { return {}; };
+    this.conversation = function(tag) {
+      tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
+      if (this.tags().indexOf(tag) === null) { return null; }
+      var messageObjs = this.messageObjsTaggedBy(tag);
+      var preceding   = this.findMessagePrecedingTag(tag);
+      if (preceding) {
+        $.extend(true, messageObjs, preceding);
+      }
+      return messageObjs;
+    };
 
     this.appendMessage = function(message) {
       var lastMessages = [$('div.kf div.kl:last').attr('id'), $('div.kf div.kk:last span:last').attr('id')];

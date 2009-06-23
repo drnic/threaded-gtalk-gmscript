@@ -33,29 +33,35 @@ Screw.Unit(function(){
     });
     describe("findMessagePrecedingTag", function(){
       it("should find a message containing a tag's text as a word", function(){
-        var expected = { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" };
+        var expected = { 
+          ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }
+        };
         expect(chat.findMessagePrecedingTag('#kids')).to(equal, expected);
       });
     });
     describe("conversation for a tag", function(){
-      it("should include previous message with 'postman' in it into conversation", function(){
-        var expected = { 
-          ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
-          ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
-        };
-        expect(chat.conversation('#kids')).to(equal, expected);
+      describe("data", function(){
+        it("should include previous message with 'postman' in it into conversation", function(){
+          var expected = { 
+            ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
+            ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
+          };
+          expect(chat.conversation('#kids')).to(equal, expected);
+        });
       });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12a").hasClass('tag-kids')).to(equal, true);
-      });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12b").hasClass('tag-kids')).to(equal, false);
-      });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12c").hasClass('tag-kids')).to(equal, true);
-      });
-      it("should add class 'tag-kids' to messages in #kids conversation", function(){
-        expect($(":12d").hasClass('tag-kids')).to(equal, false);
+      describe("DOM modification", function(){
+        it("should add class 'tag-kids' to messages in #kids conversation", function(){
+          expect($(":12a").hasClass('tag-kids')).to(equal, true);
+        });
+        it("should add class 'tag-kids' to messages in #kids conversation", function(){
+          expect($(":12b").hasClass('tag-kids')).to(equal, false);
+        });
+        it("should add class 'tag-kids' to messages in #kids conversation", function(){
+          expect($(":12c").hasClass('tag-kids')).to(equal, true);
+        });
+        it("should add class 'tag-kids' to messages in #kids conversation", function(){
+          expect($(":12d").hasClass('tag-kids')).to(equal, false);
+        });
       });
     });
   });
