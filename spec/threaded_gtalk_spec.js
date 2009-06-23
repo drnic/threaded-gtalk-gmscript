@@ -12,10 +12,10 @@ Screw.Unit(function(){
     describe("helpers", function(){
       it("find all messages", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "from" }, 
-          ":12b" : { "message": "Did the postman come today?", "direction": "from" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" },
-          ":12d" : { "message": "#postman did delivery your parcel", "direction": "to" } 
+          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12b" : { "message": "Did the postman come today?", "direction": "f" }, 
+          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
+          ":12d" : { "message": "#postman did delivery your parcel", "direction": "t" } 
         };
         expect(chat.messages()).to(equal, expected);
       });
@@ -26,14 +26,14 @@ Screw.Unit(function(){
     describe("tagged messages", function(){
       it("should find #postman tagged messages", function(){
         var expected = { 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" }
+          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.tagged('#kids')).to(equal, expected);
       });
       it("should include previous message with 'postman' in it into conversation", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "from" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" }
+          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.conversation('#kids')).to(equal, expected);
       });
@@ -58,11 +58,11 @@ Screw.Unit(function(){
       });
       it("should discover the new message", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "from" }, 
-          ":12b" : { "message": "Did the postman come today?", "direction": "from" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "to" },
-          ":12d" : { "message": "#postman did delivery your parcel", "direction": "to" },
-          ":12e" : { "message": "this is an unrelated message", "direction": "to" }
+          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12b" : { "message": "Did the postman come today?", "direction": "f" }, 
+          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
+          ":12d" : { "message": "#postman did delivery your parcel", "direction": "t" },
+          ":12e" : { "message": "this is an unrelated message", "direction": "t" }
         };
         expect(chat.messages()).to(equal, expected);
       });
