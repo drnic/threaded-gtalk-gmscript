@@ -2,6 +2,9 @@ require("spec_helper.js");
 require("../public/threaded_gtalk.js");
 
 Screw.Unit(function(){
+  before(function(){
+    $('.threaded-gtalk').remove();
+  });
   describe("find threads", function(){
     describe("helpers", function(){
       it("find all messages", function(){
@@ -46,9 +49,6 @@ Screw.Unit(function(){
     });
   });
   describe("live updates", function(){
-    before(function(){
-      $('.threaded-gtalk').remove();
-    });
     describe("unrelated message", function(){
       before(function(){
         chat.appendMessage("this is an unrelated message");
