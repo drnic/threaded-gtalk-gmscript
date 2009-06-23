@@ -31,6 +31,12 @@ Screw.Unit(function(){
         expect(chat.messageObjsTaggedBy('#kids')).to(equal, expected);
       });
     });
+    describe("findMessagePrecedingTag", function(){
+      it("should find a message containing a tag's text as a word", function(){
+        var expected = { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" };
+        expect(chat.findMessagePrecedingTag('#kids')).to(equal, expected);
+      });
+    });
     describe("conversation for a tag", function(){
       it("should include previous message with 'postman' in it into conversation", function(){
         var expected = { 

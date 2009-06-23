@@ -50,9 +50,26 @@ var ThreadedGtalk = ThreadedGtalk || {};
           messageObjs[messageObj.id] = messageObj;
         }
       });
-      console.debug(messageObjs);
       return messageObjs;
     };
+    
+    this.findMessagePrecedingTag = function(tag) {
+      tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
+      if (this.tags().indexOf(tag) === null) { return null; }
+      var untag = tag.replace(/^#/,'');
+      var messages = this.messages();
+      var messageIds = this.orderedMessageIds();
+      var untaggedMessage = null;
+      for (var i=0; i < messageIds.length; i++) {
+        var messageId = messageIds[i];
+        if (messages[messageId].message.match(new RegExp("\\b" + untag + "\\b", "i"))) {
+          untaggedMessage = messages[messageId];
+          break;
+        }
+      };
+      return untaggedMessage;
+    };
+    
     this.conversation = function(includsTag) { return {}; };
 
     this.appendMessage = function(message) {
@@ -91,11 +108,11 @@ var ThreadedGtalk = ThreadedGtalk || {};
     
     // TODO remove variable assignments after memoizing helpers
     this.eachOrderedMessage = function(callback) {
-      var _messages = this.messages();
+      var messages = this.messages();
       var messageIds = this.orderedMessageIds();
       for (var i=0; i < messageIds.length; i++) {
         var messageId = messageIds[i];
-        callback(_messages[messageId]);
+        callback(messages[messageId]);
       };
     };
     
