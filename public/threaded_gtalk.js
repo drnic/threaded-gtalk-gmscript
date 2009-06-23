@@ -1,49 +1,32 @@
-(function($){ 
-  $(function() {
-    $('select').each(function(index) {
-      if ($(this).find("option").size() <= 5) return false;
-      
-      // if <select> has no id attribute, then give it one based on name attribute
-      var id = $(this).attr('id');
-      // if (id == null || id.length == 0) {
-      if (id == null || id.length == 0 || $('select[id=' + id + ']').size() > 1) {
-        var baseid = (id == null || id.length == 0) ? 
-          $(this).attr('name').replace(/\[/,'-').replace(/\]/,'') : id;
-        id = baseid;
-        var uniqueCounter = 0;
-        while ($('select[id=' + id + ']').size() > 0) {
-          uniqueCounter += 1;
-          id = baseid + "-" + uniqueCounter;
-        }
-        $(this).attr('id', id);
-      }
-      
-      // create the Threaded Gtalk GMScript button, with rel attribute referencing corresponding <select id="...">
-      if ($('a.threaded_gtalk_activation[rel="' + id + '"]').size() === 0) {
-        $('<a class="threaded_gtalk_activation" rel="' + id + '">Threaded Gtalk GMScript</a>')
-        .insertAfter($(this))
-
-        // register onclick handler
-        .click(function(event) {
-          var selectId = $(this).attr('rel');
-          var selectField = $('#' + selectId);
-          var flexField = $('input#' + selectId + '_flexselect');
-          if (flexField.size() == 0) {
-            var width = selectField.width();
-            selectField.flexselect();
-            var flexField = $('input#' + selectId + '_flexselect');
-            flexField.width(width)
-            .click().val('').focus();
-          } else {
-            flexField.remove();
-            $('#' + selectId + '_flexselect_dropdown').remove();
-            selectField.show();
-          }
-        });
-      }
-    });
-    return false;
-  });
-})(jQuery); 
-
-
+var chat = {
+  messages: function() { return {}; },
+  tags: function() { return []; },
+  tagged: function(tag) { return {}; },
+  conversation: function(includsTag) { return {}; },
+  appendMessage: function(message) {
+    var lastMessages = [$('div.kf div.kl:last').attr('id'), $('div.kf div.kk:last span:last').attr('id')];
+    var lastMessageId = lastMessages.sort()[1].match(/[0-9a-z]+/)[0];
+    lastMessageId = parseInt(this.baseConverter(lastMessageId, 36, 10), 10);
+    var nextId = this.baseConverter((lastMessageId + 1) + "", 10, 36);
+    $('div.kf div.km:last').
+      append($('<div id=":' + nextId + '" dir="ltr" class="kl threaded-gtalk">' + message + '</div>'));
+  },
+  baseConverter: function(number,ob,nb) {
+  	// Created 1997 by Brian Risk.  http://brianrisk.com
+  	number = number.toUpperCase();
+  	var list = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  	var dec = 0;
+  	for (var i = 0; i <=  number.length; i++) {
+  		dec += (list.indexOf(number.charAt(i))) * (Math.pow(ob , (number.length - i - 1)));
+  	}
+  	number = "";
+  	var magnitude = Math.floor((Math.log(dec))/(Math.log(nb)));
+  	for (i = magnitude; i >= 0; i--) {
+  		var amount = Math.floor(dec/Math.pow(nb,i));
+  		number = number + list.charAt(amount); 
+  		dec -= amount*(Math.pow(nb,i));
+  	}
+  	return number.toLowerCase();
+  }
+  
+};

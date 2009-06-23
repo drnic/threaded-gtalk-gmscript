@@ -1,15 +1,6 @@
 require("spec_helper.js");
 require("../public/threaded_gtalk.js");
 
-// basic API for Chat object
-var chat = {
-  messages: function() { return {}; },
-  tags: function() { return []; },
-  tagged: function(tag) { return {}; },
-  conversation: function(includsTag) { return {}; },
-  appendMessage: function(message) {}
-};
-
 Screw.Unit(function(){
   describe("find threads", function(){
     describe("helpers", function(){
