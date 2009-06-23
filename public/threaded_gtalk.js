@@ -18,6 +18,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       $.each(messageElements, function(index) {
         var element = $(this);
         messages[element.attr('id')] = {
+          id: element.attr('id'),
           message: $.trim(element.text()),
           direction: element.closest("div[chat-dir]").attr('chat-dir')
         };
@@ -38,7 +39,20 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return tags;
     };
     
-    this.messageObjsTaggedBy = function(tag) { return {}; };
+    this.messageObjsTaggedBy = function(tag) {
+      tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
+      if (this.tags().indexOf(tag) === null) { return null; }
+      var messageObjs = {};
+      this.eachOrderedMessage(function(messageObj) {
+        console.debug(messageObj);
+        var taggedMessage = messageObj.message.match(new RegExp(tag));
+        if (taggedMessage) {
+          messageObjs[messageObj.id] = messageObj;
+        }
+      });
+      console.debug(messageObjs);
+      return messageObjs;
+    };
     this.conversation = function(includsTag) { return {}; };
 
     this.appendMessage = function(message) {
@@ -84,7 +98,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
         callback(_messages[messageId]);
       };
     };
-
+    
   });
 })(jQuery); 
 

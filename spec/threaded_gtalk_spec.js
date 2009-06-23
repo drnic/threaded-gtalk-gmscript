@@ -12,10 +12,10 @@ Screw.Unit(function(){
     describe("helpers", function(){
       it("find all messages", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
-          ":12b" : { "message": "Did the postman come today?", "direction": "f" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
-          ":12d" : { "message": "#postman did delivery your parcel", "direction": "t" } 
+          ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12b" : { "id": ":12b", "message": "Did the postman come today?", "direction": "f" }, 
+          ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
+          ":12d" : { "id": ":12d", "message": "#postman did delivery your parcel", "direction": "t" } 
         };
         expect(chat.messages()).to(equal, expected);
       });
@@ -26,14 +26,16 @@ Screw.Unit(function(){
     describe("messageObjsTaggedBy messages", function(){
       it("should find #postman messageObjsTaggedBy messages", function(){
         var expected = { 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
+          ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.messageObjsTaggedBy('#kids')).to(equal, expected);
       });
+    });
+    describe("conversation for a tag", function(){
       it("should include previous message with 'postman' in it into conversation", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
+          ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.conversation('#kids')).to(equal, expected);
       });
