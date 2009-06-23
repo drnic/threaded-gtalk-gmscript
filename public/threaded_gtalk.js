@@ -12,7 +12,9 @@ var chat = {
       append($('<div id=":' + nextId + '" dir="ltr" class="kl threaded-gtalk">' + message + '</div>'));
   },
   baseConverter: function(number,ob,nb) {
+    // Found at http://www.geneffects.com/briarskin/programming/newJSMathFuncs.html
   	// Created 1997 by Brian Risk.  http://brianrisk.com
+  	// Modified 2009 by Dr Nic Williams - return downcased result
   	number = number.toUpperCase();
   	var list = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   	var dec = 0;
