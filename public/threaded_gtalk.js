@@ -1,4 +1,5 @@
-var chat = {
+var ThreadedGtalk = ThreadedGtalk || {};
+ThreadedGtalk.Chat = {
   messages: function() { return {}; },
   tags: function() { return []; },
   tagged: function(tag) { return {}; },

@@ -1,8 +1,11 @@
 require("spec_helper.js");
 require("../public/threaded_gtalk.js");
 
+var chat = null;
+
 Screw.Unit(function(){
   before(function(){
+    chat = ThreadedGtalk.Chat;
     $('.threaded-gtalk').remove();
   });
   describe("find threads", function(){
