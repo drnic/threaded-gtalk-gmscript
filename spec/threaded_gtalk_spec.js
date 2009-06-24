@@ -1,7 +1,22 @@
 require("spec_helper.js");
+require("../public/jquery.livequery.js");
 require("../public/threaded_gtalk.js");
 
 var chat = null;
+
+function sleep(milliseconds, cancelSleepCallback) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    } else {
+      if (cancelSleepCallback()) {
+        break;
+      }
+    }
+  }
+}
+
 
 Screw.Unit(function(){
   before(function(){
@@ -15,7 +30,7 @@ Screw.Unit(function(){
           ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
           ":12b" : { "id": ":12b", "message": "Did the postman come today?", "direction": "f" }, 
           ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
-          ":12d" : { "id": ":12d", "message": "#postman did delivery your parcel", "direction": "t" } 
+          ":12d" : { "id": ":12d", "message": "yes the #postman did delivery your parcel", "direction": "t" } 
         };
         expect(chat.messages()).to(equal, expected);
       });
@@ -24,11 +39,17 @@ Screw.Unit(function(){
       });
     });
     describe("messageObjsTaggedBy messages", function(){
-      it("should find #postman messageObjsTaggedBy messages", function(){
+      it("should find #kids messageObjsTaggedBy messages", function(){
         var expected = { 
           ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.messageObjsTaggedBy('#kids')).to(equal, expected);
+      });
+      it("should find #postman messageObjsTaggedBy messages", function(){
+        var expected = { 
+          ":12d" : { "id": ":12d", "message": "yes the #postman did delivery your parcel", "direction": "t" } 
+        };
+        expect(chat.messageObjsTaggedBy('#postman')).to(equal, expected);
       });
     });
     describe("findMessagePrecedingTag", function(){
@@ -40,12 +61,19 @@ Screw.Unit(function(){
       });
     });
     describe("conversation for a tag", function(){
-      it("should include previous message with 'postman' in it into conversation", function(){
+      it("should include previous message with 'kids' in it into conversation", function(){
         var expected = { 
           ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
           ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" }
         };
         expect(chat.conversation('#kids')).to(equal, expected);
+      });
+      it("should include previous message with 'postman' in it into conversation", function(){
+        var expected = { 
+          ":12b" : { "id": ":12b", "message": "Did the postman come today?", "direction": "f" }, 
+          ":12d" : { "id": ":12d", "message": "yes the #postman did delivery your parcel", "direction": "t" } 
+        };
+        expect(chat.conversation('#postman')).to(equal, expected);
       });
     });
   });
@@ -72,17 +100,17 @@ Screw.Unit(function(){
       });
       it("should discover the new message", function(){
         var expected = { 
-          ":12a" : { "message": "Nanc, how are the kids?", "direction": "f" }, 
-          ":12b" : { "message": "Did the postman come today?", "direction": "f" }, 
-          ":12c" : { "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
-          ":12d" : { "message": "#postman did delivery your parcel", "direction": "t" },
-          ":12e" : { "message": "this is an unrelated message", "direction": "t" }
+          ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }, 
+          ":12b" : { "id": ":12b", "message": "Did the postman come today?", "direction": "f" }, 
+          ":12c" : { "id": ":12c", "message": "#kids are fine; I think Banjo has the flu again", "direction": "t" },
+          ":12d" : { "id": ":12d", "message": "yes the #postman did delivery your parcel", "direction": "t" },
+          ":12e" : { "id": ":12e", "message": "this is an unrelated message", "direction": "t" }
         };
         expect(chat.messages()).to(equal, expected);
       });
       it("should not add the message to either conversation theread", function(){
-        expect($(":12e").hasClass('tag-kids')).to(equal, false);
-        expect($(":12e").hasClass('tag-postman')).to(equal, false);
+        expect($("[id=:12e]").hasClass('tag-kids')).to(equal, false);
+        expect($("[id=:12e]").hasClass('tag-postman')).to(equal, false);
       });
       it("should not add new tags", function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);
@@ -90,13 +118,15 @@ Screw.Unit(function(){
     });
     describe("extra threaded message", function(){
       before(function(){
-        chat.appendMessage("this message is in #kid thread");
+        chat.appendMessage("this message is in #kids thread");
+        // trigger the livequery update helper now
+        discoverTags.call($("[id=:12e]"));
       });
-      it("should add the message to #kid theread", function(){
-        expect($(":12e").hasClass('tag-kids')).to(equal, true);
+      it("should add the message to #kids thread", function(){
+        expect($("[id=:12e]").hasClass('tag-kids')).to(equal, true);
       });
-      it("should not add the message to #postman theread", function(){
-        expect($(":12e").hasClass('tag-postman')).to(equal, false);
+      it("should not add the message to #postman thread", function(){
+        expect($("[id=:12e]").hasClass('tag-postman')).to(equal, false);
       });
       it("should not add new tags", function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);

@@ -1,4 +1,5 @@
 var ThreadedGtalk = ThreadedGtalk || {};
+
 (function($){
   // TODO move extensions to helper file
   $.extend({
@@ -37,7 +38,11 @@ var ThreadedGtalk = ThreadedGtalk || {};
       this.eachOrderedMessage(function(messageObj) {
         var messageTags = messageObj.message.match(/#[^ ]*/g);
         if (messageTags) {
-          $.merge(tags, messageTags);
+          for (var i=0; i < messageTags.length; i++) {
+            if ($.inArray(messageTags[i], tags) == -1) {
+              tags.push(messageTags[i]);
+            }
+          };
         }
       });
       return tags;
@@ -47,13 +52,18 @@ var ThreadedGtalk = ThreadedGtalk || {};
       tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
       if (this.tags().indexOf(tag) === null) { return null; }
       var messageObjs = {};
+      var self = this;
       this.eachOrderedMessage(function(messageObj) {
-        var taggedMessage = messageObj.message.match(new RegExp(tag));
-        if (taggedMessage) {
+        if (ThreadedGtalk.Chat.messageContainsTag(messageObj, tag)) {
           messageObjs[messageObj.id] = messageObj;
         }
       });
       return messageObjs;
+    };
+    
+    this.messageContainsTag = function(messageObj, tag) {
+      tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
+      return messageObj.message.match(new RegExp("(?:^| )" + tag + "(?:$| )", "i"));
     };
     
     this.findMessagePrecedingTag = function(tag) {
@@ -64,7 +74,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       var untaggedMessage = null;
       for (var i=0; i < messageIds.length; i++) {
         var messageId = messageIds[i];
-        if (messages[messageId].message.match(new RegExp("\\b" + this.untag(tag) + "\\b", "i"))) {
+        if (messages[messageId].message.match(new RegExp("(?:^|\\b)" + this.untag(tag) + "(?:^|\\b)", "i"))) {
           untaggedMessage = {};
           untaggedMessage[messageId] = messages[messageId];
           break;
@@ -117,7 +127,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
     
     // TODO memoize/cache result until new message DOM elements detected
     this.orderedMessageIds = function() {
-      return $.unique($.keys(this.messages())).sort();
+      return $.keys(this.messages()).sort();
     };
     
     // Loop through each messageObj in order of the message ids
@@ -138,6 +148,15 @@ var ThreadedGtalk = ThreadedGtalk || {};
     
   });
   
+  $.fn.updateForTag = function(tag) {
+    if (!this.length) {
+        log('updateForTag: skipping tagging process - no element selected');
+        return this;
+    }
+    this.addClass("tag-" + ThreadedGtalk.Chat.untag(tag));
+    return this;
+  };
+  
   $(function() {
     var chat = ThreadedGtalk.Chat;
     var tags = chat.tags();
@@ -146,9 +165,24 @@ var ThreadedGtalk = ThreadedGtalk || {};
       var messages = chat.conversation(tag);
       for (var messageId in messages) {
         var messageObj = messages[messageId];
-        $("[id=" + messageObj.id + "]").addClass("tag-" + chat.untag(tag));
+        $("[id=" + messageObj.id + "]").updateForTag(tag);
       };
     };
+    // new elements only need to match against existing tags
+    chat.messageElements().livequery(discoverTags, function() {});
   });
 })(jQuery); 
+
+function discoverTags() {
+  // TODO reset all memoizations
+  var chat = ThreadedGtalk.Chat;
+  var tags = chat.tags();
+  for (var i=0; i < tags.length; i++) {
+    var tag = tags[i];
+    var messageObj = chat.messages()[$(this).attr('id')];
+    if (chat.messageContainsTag(messageObj, tag)) {
+      $(this).updateForTag(tag);
+    }
+  }
+}
 
