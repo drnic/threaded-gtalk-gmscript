@@ -11,7 +11,6 @@ var ThreadedGtalk = ThreadedGtalk || {};
   });
   
   ThreadedGtalk.Chat = (new function(){
-
     this.messageElements = function() {
       return $('div.kf div.kl[id], div.kf div.kk span[id]');
     };

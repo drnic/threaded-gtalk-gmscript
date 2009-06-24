@@ -4,20 +4,6 @@ require("../public/threaded_gtalk.js");
 
 var chat = null;
 
-function sleep(milliseconds, cancelSleepCallback) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    } else {
-      if (cancelSleepCallback()) {
-        break;
-      }
-    }
-  }
-}
-
-
 Screw.Unit(function(){
   before(function(){
     chat = ThreadedGtalk.Chat;
@@ -78,7 +64,7 @@ Screw.Unit(function(){
     });
   });
   describe("initial DOM modifications", function(){
-    describe("DOM modification", function(){
+    describe("DOM modification with tagged classes", function(){
       it("should add class 'tag-kids' to messages in #kids conversation (:12a)", function(){
         expect($("[id=:12a]").hasClass('tag-kids')).to(equal, true);
       });
@@ -90,6 +76,26 @@ Screw.Unit(function(){
       });
       it("should not add class 'tag-kids' to messages in #kids conversation (:12d)", function(){
         expect($("[id=:12d]").hasClass('tag-kids')).to(equal, false);
+      });
+    });
+    describe("DOM modification with thread-numbered classes", function(){
+      it("should add class 'thread-1' to messages in #kids conversation (:12a)", function(){
+        expect($("[id=:12a]").hasClass('thread-1')).to(equal, true);
+      });
+      it("should add class 'thread-1' to messages in #kids conversation (:12c)", function(){
+        expect($("[id=:12c]").hasClass('thread-1')).to(equal, true);
+      });
+      it("should not add class 'thread-1' to messages in #kids conversation (:12b)", function(){
+        expect($("[id=:12b]").hasClass('thread-1')).to(equal, false);
+      });
+      it("should not add class 'thread-1' to messages in #kids conversation (:12d)", function(){
+        expect($("[id=:12d]").hasClass('thread-1')).to(equal, false);
+      });
+      it("should add class 'thread-2' to messages in #postman conversation (:12b)", function(){
+        expect($("[id=:12b]").hasClass('thread-2')).to(equal, true);
+      });
+      it("should add class 'thread-2' to messages in #postman conversation (:12d)", function(){
+        expect($("[id=:12d]").hasClass('thread-2')).to(equal, true);
       });
     });
   });
