@@ -8,6 +8,7 @@ Screw.Unit(function(){
   before(function(){
     chat = ThreadedGtalk.Chat;
     $('.threaded-gtalk').remove();
+    // discoverTags.call(chat.messageElements());
   });
   describe("find threads", function(){
     describe("helpers", function(){

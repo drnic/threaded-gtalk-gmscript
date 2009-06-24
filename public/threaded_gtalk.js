@@ -93,6 +93,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       }
       return messageObjs;
     };
+    
 
     // test helper to simulate addition of message to last person's set of messages
     this.appendMessage = function(message) {
@@ -145,6 +146,10 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return tag.replace(/^#/,'');
     };
     
+    this.threadClassByTag = function(tag) {
+      return 'thread-' + (this.tags().indexOf(tag) + 1);
+    };
+    
   });
   
   $.fn.updateForTag = function(tag) {
@@ -153,6 +158,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
         return this;
     }
     this.addClass("tag-" + ThreadedGtalk.Chat.untag(tag));
+    this.addClass(ThreadedGtalk.Chat.threadClassByTag(tag));
     return this;
   };
   
