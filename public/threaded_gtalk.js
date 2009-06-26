@@ -2,17 +2,13 @@ var ThreadedGtalk = ThreadedGtalk || {};
 
 (function($){
   // TODO move extensions to helper file
-  $.extend({
-      keys: function(obj){
-          var a = [];
-          $.each(obj, function(k){ a.push(k); });
-          return a;
-      }
-  });
-  
   ThreadedGtalk.Chat = (new function(){
     this.messageElements = function() {
       return $('div.kf div.kl[id], div.kf div.kk span[id]');
+    };
+    
+    this.newMessageElements = function() {
+      return $('div.kf div.kl[id]:not(.threaded-gtalk-observed), div.kf div.kk span[id]:not(.threaded-gtalk-observed)');
     };
     
     // TODO memoize/cache result until new message DOM elements detected
@@ -159,8 +155,54 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return $("[id=" + messageObj.id + "]");
     };
     
+    this.discoverTags = function() {
+      // TODO reset all memoizations
+      var chat = ThreadedGtalk.Chat;
+      var tags = chat.tags();
+      this.newMessageElements().each(function(index) {
+        for (var i=0; i < tags.length; i++) {
+          var tag = tags[i];
+          var messageObj = chat.messages()[$(this).attr('id')];
+          if (messageObj && chat.messageContainsTag(messageObj, tag)) {
+            $(this).updateForTag(tag);
+            var prevMessageObjs = chat.findMessagePrecedingTags(tag);
+            for (var key in prevMessageObjs) {
+              chat.updateMessageForTag(prevMessageObjs[key], tag);
+            };
+          }
+        }
+        chat.noLongerNewMessageElement(this);
+      });
+    };
+    
+    this.noLongerNewMessageElement = function(element) {
+      $(element).addClass('threaded-gtalk-observed');
+    };
+    
+    this.startDiscoveringMessages = function() {
+      if (this.interval) {
+        setInterval(this.discoverTags, 100);
+      }
+    };
+    
+    // debugging helper to stop the discovery mechanism
+    this.stopDiscoveringMessages = function() {
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+    };
   });
   
+  $.extend({
+      keys: function(obj){
+          var a = [];
+          $.each(obj, function(k){ a.push(k); });
+          return a;
+      }
+  });
+  
+  // TODO Need for this to be jQuery extension?
   $.fn.updateForTag = function(tag) {
     if (!this.length) {
         console.debug('updateForTag: skipping tagging process - no element selected with ' + this.selector);
@@ -172,37 +214,19 @@ var ThreadedGtalk = ThreadedGtalk || {};
   };
   
   $(function() {
-    var chat = ThreadedGtalk.Chat;
-    var tags = chat.tags();
-    for (var i=0; i < tags.length; i++) {
-      var tag = tags[i];
-      var messages = chat.conversation(tag);
-      for (var messageId in messages) {
-        var messageObj = messages[messageId];
-        chat.updateMessageForTag(messageObj, tag);
-      };
-    };
-    // new elements only need to match against existing tags
-    // TODO might need setInterval/setTimeout look as livequery not triggering inside gmail
-    // OR piggy back on XHR chat calls
-    chat.messageElements().livequery(discoverTags, function() {});
+    // var chat = ThreadedGtalk.Chat;
+    // var tags = chat.tags();
+    // for (var i=0; i < tags.length; i++) {
+    //   var tag = tags[i];
+    //   var messages = chat.conversation(tag);
+    //   for (var messageId in messages) {
+    //     var messageObj = messages[messageId];
+    //     chat.updateMessageForTag(messageObj, tag);
+    //   };
+    // };
+    if (!ThreadedGtalk.disableInterval) {
+      ThreadedGtalk.Chat.startDiscoveringMessages();
+    }
   });
 })(jQuery);
-
-function discoverTags() {
-  // TODO reset all memoizations
-  var chat = ThreadedGtalk.Chat;
-  var tags = chat.tags();
-  for (var i=0; i < tags.length; i++) {
-    var tag = tags[i];
-    var messageObj = chat.messages()[$(this).attr('id')];
-    if (chat.messageContainsTag(messageObj, tag)) {
-      $(this).updateForTag(tag);
-      var prevMessageObjs = chat.findMessagePrecedingTags(tag);
-      for (var key in prevMessageObjs) {
-        chat.updateMessageForTag(prevMessageObjs[key], tag);
-      };
-    }
-  }
-}
 

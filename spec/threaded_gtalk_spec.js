@@ -8,8 +8,9 @@ var chat = null;
 Screw.Unit(function(){
   before(function(){
     chat = ThreadedGtalk.Chat;
+    ThreadedGtalk.disableInterval = true;
     $('.threaded-gtalk').remove();
-    // discoverTags.call(chat.messageElements());
+    chat.discoverTags();
   });
   describe("find threads", function(){
     describe("helpers", function(){
@@ -24,6 +25,9 @@ Screw.Unit(function(){
       });
       it("should find tags", function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);
+      });
+      it("should not have any remaining new messages", function(){
+        expect(chat.newMessageElements().size()).to(equal, 0);
       });
     });
     describe("messageObjsTaggedBy messages", function(){
@@ -105,6 +109,7 @@ Screw.Unit(function(){
     describe("unrelated message", function(){
       before(function(){
         chat.appendMessage("this is an unrelated message");
+        chat.discoverTags();
       });
       it("should discover the new message", function(){
         var expected = { 
@@ -127,8 +132,7 @@ Screw.Unit(function(){
     describe("extra threaded message", function(){
       before(function(){
         chat.appendMessage("this message is in #kids thread");
-        // trigger the livequery update helper now
-        discoverTags.call($("[id=:12e]"));
+        chat.discoverTags();
       });
       it("should add the message to #kids thread", function(){
         expect($("[id=:12e]").hasClass('tag-kids')).to(equal, true);
@@ -144,6 +148,7 @@ Screw.Unit(function(){
       before(function(){
         chat.appendMessage("I want to talk about cookies now");
         chat.appendMessage("ooh I love #cookies");
+        chat.discoverTags();
       });
       describe("data structure", function(){
         it("should discover new #cookies tag", function(){
@@ -154,11 +159,6 @@ Screw.Unit(function(){
         });
       });
       describe("DOM changes", function(){
-        before(function(){
-          chat.eachOrderedMessage(function(messageObj) {
-            discoverTags.call(chat.messageObjElement(messageObj));
-          }, '#cookies');
-        });
         it("should mark last 2 message elements with class 'tag-cookies'", function(){
           expect($('.tag-cookies').size()).to(equal, 2);
         });

@@ -22,7 +22,6 @@
   };
   var load_latest_threaded_gtalk = function() {
     require("http://threaded-gtalk-gmscript.local/jquery.js");
-    require("http://threaded-gtalk-gmscript.local/jquery.livequery.js");
     require("http://threaded-gtalk-gmscript.local/threaded_gtalk.js");
     require("http://threaded-gtalk-gmscript.local/threaded_gtalk_theme.js");
   };
