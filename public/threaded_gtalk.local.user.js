@@ -2,8 +2,7 @@
 // @name          Threaded Gtalk GMScript
 // @namespace     http://drnicwilliams.com/
 // @description   Instant autocompletion for any <select> drop downs on any page
-// @include       https://*
-// @include       http://*
+// @include       https://mail.google.com/mail/*
 // @version       1.0
 // ==/UserScript==
 
@@ -21,10 +20,6 @@
     script.setAttribute("src", src);
     head.appendChild(script);
   };
-  var load_latest_threaded_gtalk = function() {
-    require("http://threaded-gtalk-gmscript.local/threaded_gtalk_complete.js");
-  };
-  
-  flexselect_theme();
-  load_latest_threaded_gtalk();
+
+  require("http://threaded-gtalk-gmscript.local/threaded_gtalk_complete.js");
 })();

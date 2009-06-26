@@ -21,12 +21,12 @@ end
 
 desc "Builds the compiled JS file that is downloaded by greasemonkey script"
 task :build do
-  files = %w[jquery jquery.noConflict liquidmetal jquery.flexselect threaded_gtalk]
+  files = %w[jquery jquery.noConflict threaded_gtalk threaded_gtalk_theme]
   content = files.map { |file| File.read(File.join(APP_SRC_DIR, file + ".js")) }.join("\n\n")
   File.open(File.join(APP_SRC_DIR, "threaded_gtalk_complete.js"), "w") do |file|
-    file << "(function() {\n"
+    # file << "(function() {\n"
     file << content
-    file << "}());"
+    # file << "}());"
   end
 end
 
