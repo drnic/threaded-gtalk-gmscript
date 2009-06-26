@@ -140,6 +140,30 @@ Screw.Unit(function(){
         expect(chat.tags()).to(equal, ['#kids', '#postman']);
       });
     });
+    describe("find messages when new #thread tag used", function(){
+      before(function(){
+        chat.appendMessage("I want to talk about cookies now");
+        chat.appendMessage("ooh I love #cookies");
+        // trigger some how
+      });
+      describe("data structure", function(){
+        it("should discover new #cookies tag", function(){
+          expect(chat.tags()).to(includes, '#cookies'); // no idea if include is a matcher
+        });
+        it("should have 2 messages in #cookies tag", function(){
+          var messageObjs = chat.messageObjsTaggedBy('#cookies');
+          expect($.makeArray(messageObjs).length).to(equal, 2);
+        });
+      });
+      describe("DOM changes", function(){
+        it("should mark last 2 message elements with class 'tag-cookies'", function(){
+          expect($('.tag-cookies').size()).to(equal, 2);
+        });
+        it("should mark last 2 message elements with class 'thread-3'", function(){
+          expect($('.thread-3').size()).to(equal, 2);
+        });
+      });
+    });
   });
 });
 
