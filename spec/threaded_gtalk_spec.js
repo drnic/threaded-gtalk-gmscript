@@ -40,12 +40,12 @@ Screw.Unit(function(){
         expect(chat.messageObjsTaggedBy('#postman')).to(equal, expected);
       });
     });
-    describe("findMessagePrecedingTag", function(){
+    describe("findMessagePrecedingTags", function(){
       it("should find a message containing a tag's text as a word", function(){
         var expected = { 
           ":12a" : { "id": ":12a", "message": "Nanc, how are the kids?", "direction": "f" }
         };
-        expect(chat.findMessagePrecedingTag('#kids')).to(equal, expected);
+        expect(chat.findMessagePrecedingTags('#kids')).to(equal, expected);
       });
     });
     describe("conversation for a tag", function(){
@@ -144,18 +144,21 @@ Screw.Unit(function(){
       before(function(){
         chat.appendMessage("I want to talk about cookies now");
         chat.appendMessage("ooh I love #cookies");
-        // trigger some how
       });
       describe("data structure", function(){
         it("should discover new #cookies tag", function(){
           expect(chat.tags()).to(includes, '#cookies'); // no idea if include is a matcher
         });
         it("should have 2 messages in #cookies tag", function(){
-          var messageObjs = chat.messageObjsTaggedBy('#cookies');
-          expect($.makeArray(messageObjs).length).to(equal, 2);
+          expect($.keys(chat.conversation('#cookies')).length).to(equal, 2);
         });
       });
       describe("DOM changes", function(){
+        before(function(){
+          chat.eachOrderedMessage(function(messageObj) {
+            discoverTags.call(chat.messageObjElement(messageObj));
+          }, '#cookies');
+        });
         it("should mark last 2 message elements with class 'tag-cookies'", function(){
           expect($('.tag-cookies').size()).to(equal, 2);
         });

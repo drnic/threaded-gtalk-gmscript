@@ -65,7 +65,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return messageObj.message.match(new RegExp("(?:^| )" + tag + "(?:$| )", "i"));
     };
     
-    this.findMessagePrecedingTag = function(tag) {
+    this.findMessagePrecedingTags = function(tag) {
       tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
       if (this.tags().indexOf(tag) === null) { return null; }
       var messages = this.messages();
@@ -87,14 +87,13 @@ var ThreadedGtalk = ThreadedGtalk || {};
       tag = tag.match(/^#/) ? tag : '#' + tag; // ensure tag prefixed by #
       if (this.tags().indexOf(tag) === null) { return null; }
       var messageObjs = this.messageObjsTaggedBy(tag);
-      var preceding   = this.findMessagePrecedingTag(tag);
+      var preceding   = this.findMessagePrecedingTags(tag);
       if (preceding) {
         $.extend(true, messageObjs, preceding);
       }
       return messageObjs;
     };
     
-
     // test helper to simulate addition of message to last person's set of messages
     this.appendMessage = function(message) {
       var lastMessages = this.messageElements();
@@ -133,12 +132,14 @@ var ThreadedGtalk = ThreadedGtalk || {};
     // Loop through each messageObj in order of the message ids
     // callback function is passed a messageObj { id, message, direction }
     // TODO remove variable assignments after memoizing helpers
-    this.eachOrderedMessage = function(callback) {
+    this.eachOrderedMessage = function(callback, onlyForTag) {
       var messages = this.messages();
       var messageIds = this.orderedMessageIds();
       for (var i=0; i < messageIds.length; i++) {
         var messageId = messageIds[i];
-        callback(messages[messageId]);
+        if (!onlyForTag || this.conversation(onlyForTag)[messageId]) {
+          callback(messages[messageId]);
+        }
       };
     };
     
@@ -150,11 +151,19 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return 'thread-' + (this.tags().indexOf(tag) + 1);
     };
     
+    this.updateMessageForTag = function(messageObj, tag) {
+      this.messageObjElement(messageObj).updateForTag(tag);
+    };
+    
+    this.messageObjElement = function(messageObj) {
+      return $("[id=" + messageObj.id + "]");
+    };
+    
   });
   
   $.fn.updateForTag = function(tag) {
     if (!this.length) {
-        log('updateForTag: skipping tagging process - no element selected');
+        console.debug('updateForTag: skipping tagging process - no element selected with ' + this.selector);
         return this;
     }
     this.addClass("tag-" + ThreadedGtalk.Chat.untag(tag));
@@ -170,7 +179,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
       var messages = chat.conversation(tag);
       for (var messageId in messages) {
         var messageObj = messages[messageId];
-        $("[id=" + messageObj.id + "]").updateForTag(tag);
+        chat.updateMessageForTag(messageObj, tag);
       };
     };
     // new elements only need to match against existing tags
@@ -189,6 +198,10 @@ function discoverTags() {
     var messageObj = chat.messages()[$(this).attr('id')];
     if (chat.messageContainsTag(messageObj, tag)) {
       $(this).updateForTag(tag);
+      var prevMessageObjs = chat.findMessagePrecedingTags(tag);
+      for (var key in prevMessageObjs) {
+        chat.updateMessageForTag(prevMessageObjs[key], tag);
+      };
     }
   }
 }
