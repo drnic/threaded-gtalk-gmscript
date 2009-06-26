@@ -155,11 +155,13 @@ var ThreadedGtalk = ThreadedGtalk || {};
       return $("[id=" + messageObj.id + "]");
     };
     
+    // NOTE: invoked within setInterval so doesn't have 'this' pointing
+    // to its ThreadedGtalk.Chat object.
     this.discoverTags = function() {
       // TODO reset all memoizations
       var chat = ThreadedGtalk.Chat;
       var tags = chat.tags();
-      this.newMessageElements().each(function(index) {
+      chat.newMessageElements().each(function(index) {
         for (var i=0; i < tags.length; i++) {
           var tag = tags[i];
           var messageObj = chat.messages()[$(this).attr('id')];
@@ -180,8 +182,8 @@ var ThreadedGtalk = ThreadedGtalk || {};
     };
     
     this.startDiscoveringMessages = function() {
-      if (this.interval) {
-        setInterval(this.discoverTags, 100);
+      if (!this.interval) {
+        this.interval = setInterval(this.discoverTags, 250);
       }
     };
     
@@ -224,7 +226,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
     //     chat.updateMessageForTag(messageObj, tag);
     //   };
     // };
-    if (!ThreadedGtalk.disableInterval) {
+    if (! ThreadedGtalk.disableInterval) {
       ThreadedGtalk.Chat.startDiscoveringMessages();
     }
   });
