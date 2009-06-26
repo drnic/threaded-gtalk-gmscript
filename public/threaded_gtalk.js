@@ -174,9 +174,11 @@ var ThreadedGtalk = ThreadedGtalk || {};
       };
     };
     // new elements only need to match against existing tags
+    // TODO might need setInterval/setTimeout look as livequery not triggering inside gmail
+    // OR piggy back on XHR chat calls
     chat.messageElements().livequery(discoverTags, function() {});
   });
-})(jQuery); 
+})(jQuery);
 
 function discoverTags() {
   // TODO reset all memoizations

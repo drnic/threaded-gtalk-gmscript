@@ -1,9 +1,8 @@
 // ==UserScript==
 // @name          Threaded Gtalk GMScript
 // @namespace     http://drnicwilliams.com/
-// @description   Instant autocompletion for any <select> drop downs on any page
-// @include       https://*
-// @include       http://*
+// @description   Annotate Gtalk messages based on #tag threads
+// @include       https://mail.google.com/mail/*
 // @version       1.0
 // ==/UserScript==
 
@@ -11,7 +10,7 @@
 // It loads the public/*.js files individual so no `rake build` is required
 // The project must be mounted as http://threaded-gtalk-gmscript.local
 // I do this using Passenger (drop project folder into Passenger PrefPane)
-// The threaded-gtalk.user.js file contains the public url for downloading scripts and assets
+// The threaded_gtalk.user.js file contains the public url for downloading scripts and assets
 
 (function() {
   var head = document.getElementsByTagName("head")[0];
@@ -23,7 +22,9 @@
   };
   var load_latest_threaded_gtalk = function() {
     require("http://threaded-gtalk-gmscript.local/jquery.js");
+    require("http://threaded-gtalk-gmscript.local/jquery.livequery.js");
     require("http://threaded-gtalk-gmscript.local/threaded_gtalk.js");
+    require("http://threaded-gtalk-gmscript.local/threaded_gtalk_theme.js");
   };
   
   load_latest_threaded_gtalk();
