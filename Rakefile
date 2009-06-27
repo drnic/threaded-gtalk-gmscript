@@ -67,19 +67,3 @@ task :update_bookmarklet do
   end
 end
 
-namespace 'github' do
-  namespace 'pages' do
-    desc "Setup 'website' as submodule to gh-pages, if it already exists"
-    task :setup_submodule do
-      current_branch = `git branch | grep "^*" | sed -e "s/* //"`.strip
-      repo = `git config --list | grep "^remote.origin.url" | sed -e "s/remote.origin.url=//"`.strip
-      puts "Working in #{current_branch} branch of #{repo}:"
-      commands = <<-CMD.gsub(/^      /, '')
-      git submodule add -b gh-pages #{repo} website
-      git commit -a -m "website -> gh-pages folder"
-      git push
-      CMD
-      commands.split(/\n/).each { |cmd| sh cmd }
-    end
-  end
-end
