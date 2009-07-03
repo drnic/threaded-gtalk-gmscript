@@ -155,7 +155,7 @@ Screw.Unit(function(){
           expect(chat.tags()).to(includes, '#cookies'); // no idea if include is a matcher
         });
         it("should have 2 messages in #cookies tag", function(){
-          expect($.keys(chat.conversation('#cookies')).length).to(equal, 2);
+          expect($.keys(chat.conversation('#cookies'))).to(have_length, 2);
         });
       });
       describe("DOM changes", function(){

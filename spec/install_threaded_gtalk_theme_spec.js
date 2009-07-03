@@ -10,7 +10,7 @@ Screw.Unit(function(){
   });
   describe("theme installed", function(){
     it("should create theme <style> block", function(){
-      expect($('style.threaded_gtalk_theme').size()).to(equal, 1);
+      expect($('style.threaded_gtalk_theme')).to(have_size, 1);
     });
     describe("#kids tag is 1st thread", function(){
       it("should colour #kids message green", function(){
