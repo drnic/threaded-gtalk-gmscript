@@ -1,8 +1,9 @@
 // ==UserScript==
-// @name          Threaded Gtalk GMScript
+// @name          Threaded Gmail Chat/Gtalk
 // @namespace     http://drnicwilliams.com/
 // @description   Annotate Gtalk messages based on #tag threads
-// @include       https://mail.google.com/mail/*
+// @include       https://mail.google.com/*
+// @include       http://mail.google.com/*
 // @version       1.0
 // ==/UserScript==
 

@@ -183,7 +183,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
     
     this.startDiscoveringMessages = function() {
       if (!this.interval) {
-        this.interval = setInterval(this.discoverTags, 250);
+        this.interval = setInterval(this.discoverTags, 1000);
       }
     };
     
@@ -216,17 +216,7 @@ var ThreadedGtalk = ThreadedGtalk || {};
   };
   
   $(function() {
-    // var chat = ThreadedGtalk.Chat;
-    // var tags = chat.tags();
-    // for (var i=0; i < tags.length; i++) {
-    //   var tag = tags[i];
-    //   var messages = chat.conversation(tag);
-    //   for (var messageId in messages) {
-    //     var messageObj = messages[messageId];
-    //     chat.updateMessageForTag(messageObj, tag);
-    //   };
-    // };
-    if (! ThreadedGtalk.disableInterval) {
+    if (!ThreadedGtalk.disableInterval) {
       ThreadedGtalk.Chat.startDiscoveringMessages();
     }
   });

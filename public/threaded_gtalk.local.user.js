@@ -16,5 +16,5 @@
     head.appendChild(script);
   };
 
-  require("http://drnic.github.com/threaded-gtalk-gmscript/dist/threaded_gtalk_complete.js");
+  require("http://threaded-gtalk-gmscript.local/threaded_gtalk_complete.js");
 })();
