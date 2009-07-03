@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name          Threaded Gtalk GMScript
+// @name          Threaded Gmail Chat/Gtalk
 // @namespace     http://drnicwilliams.com/
 // @description   Instant autocompletion for any <select> drop downs on any page
 // @include       https://mail.google.com/*

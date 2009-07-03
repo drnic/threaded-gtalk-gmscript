@@ -1,5 +1,4 @@
 require("spec_helper.js");
-require("../public/jquery.livequery.js");
 require("../public/threaded_gtalk.js");
 require("../public/threaded_gtalk_theme.js");
 
